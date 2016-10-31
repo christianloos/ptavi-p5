@@ -24,7 +24,7 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
  ** ¿Cuál de los dos es mayor? ¿Es esto consistente con una aplicación que transmite en tiempo real?
     - El protocolo UDP tiene un porcentaje de paquetes mucho mayor que TCP. Esto es lo adecuado ya que en aplicaciones de tiempo real TCP no sirve por el tiempo que supone ir verificando la recepción de cada paquete de datos, y los protocolos como RTP o RTCP se encapsulan sobre UDP.
  ** ¿Qué otros protocolos podemos ver en la jerarquía de protocolos?
-    - Podemos observar también Ethernet, IPv4, SIP, RTP, RTCP, HTP, ICMP y ARP.
+    - Podemos observar también Ethernet, IPv4, SIP, RTP, RTCP, HTTP, ICMP y ARP.
 
 4. Observa por encima el flujo de tramas en el menú de Statistics en IO Graphs. La captura que estamos viendo incluye desde la inicialización (registro) de la aplicación hasta su finalización, con una llamada entremedias.
  ** Filtra por sip para conocer cuándo se envían paquetes SIP. ¿En qué segundos tienen lugar esos envíos?
@@ -48,9 +48,13 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
 
 6. A continuación, hay más de una docena de tramas TCP/HTTP.
  ** ¿Podrías decir la URL que se está pidiendo?
+    - Pide la URL http://ekiga.net/ip/
  ** ¿Qué user agent (UA) la está pidiendo?
+    - El agente que la pide es Ekiga
  ** ¿Qué devuelve el servidor?
+    - Devuelve un OK *****
  ** Si lanzamos el navegador web, por ejemplo, Mozilla Firefox, y vamos a la misma URL, ¿qué recibimos? ¿Qué es, entonces, lo que está respondiendo el servidor?
+    - Aparece la dirección IP 212.128.254.152 *******
 
 
 7. Hasta la trama 45 se puede observar una secuencia de tramas del protocolo STUN.
