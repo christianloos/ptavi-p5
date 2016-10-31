@@ -80,9 +80,13 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
 
 9. Fijémonos en las tramas siguientes a la número 46:
  ** ¿Se registra con éxito en el primer intento?
+    - No, el servidor no autoriza el registro.
  ** ¿Cómo sabemos si el registro se ha realizado correctamente o no?
+    - Sabemos que se ha realizado correctamente cuando vemos que el servidor nos responde con un "200 OK", como podemos ver en el paquete 54.
  ** ¿Podrías identificar las diferencias entre el primer intento y el segundo de registro? (fíjate en el tamaño de los paquetes y mira a qué se debe el cambio)
+    - El primer intento tiene un tamaño de 523 bytes, el segundo de 712. Esto se debe a que en el primer paquete enviado no va el campo Authorization en la cabecera, con la información de autenticación pertinente del user agent para el servicio que se está pidiendo.
  ** ¿Cuánto es el valor del tiempo de expiración de la sesión? Indica las unidades.
+    - 3600 segundos.
 
 
 10. Una vez registrados, podemos efectuar una llamada. Vamos a probar con el servicio de eco de Ekiga que nos permite comprobar si nos hemos conectado correctamente. El servicio de eco tiene la dirección sip:500@ekiga.net. Veamos el INVITE de cerca.
