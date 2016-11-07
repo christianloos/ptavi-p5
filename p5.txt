@@ -243,11 +243,21 @@ Captura una sesión SIP de una conversación con el número SIP sip:9999@qxip.ne
 
 
 18. Identifica las diferencias existentes entre esta conversación y la conversación anterior:
+
  ** ¿Cuántos flujos tenemos?
+    - Seguimos teniendo dos flujos.
+    
  ** ¿Cuál es su periodicidad?
+    - En este caso el valor aumenta y será aproximadamente cada 30 milisegundos.
+    
  ** ¿Cuánto es el valor máximo del delta y los valores medios y máximo del jitter?
+    - Para el primer flujo, 30'684 de máximo de delta, 3'159 de valor medio y 5'733 de valor máximo de jitter. Para el segundo flujo, 103'754 de máximo de delta, 1'267 de valor medio y 8'76 de valor máximo de jitter.
+    
  ** ¿Podrías reproducir la conversación desde Wireshark? ¿Cómo? Comprueba que poniendo un valor demasiado pequeño para el buffer de jitter, la conversación puede no tener la calidad necesaria.
+    - Se puede reproducir desde la opción Play Streams de RTP Stream Analysis en Telephony.
+    
  ** ¿Sabrías decir qué tipo de servicio ofrece sip:9999@qxip.net?
+    - Hemos usado sip:music@iptel.org, que ofrece música en línea.
 
 
 
