@@ -212,9 +212,15 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
 
 
 16. Finalmente, se cierra la aplicación de VozIP.
+
  ** ¿Por qué aparece una instrucción SIP del tipo REGISTER?
+    - Para eliminar de su base de datos a ese User Agent, se realiza un nuevo REGISTER pero esta vez con tiempo de expiración 0, para que el servidor Registrar lo elimine.
+    
  ** ¿En qué trama sucede esto?
+    - En la 952.
+    
  ** ¿En qué se diferencia con la instrucción que se utilizó con anterioridad (al principio de la sesión)?
+    - Difiere en el tiempo de expiración.
 
 
 
