@@ -11,66 +11,90 @@ Análisis de una sesión SIP
 
 Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wireshark2. Se pide rellenar las cuestiones que se plantean en este guión en el fichero p5.txt que encontrarás también en el repositorio.
 
+
 2. Observa que las tramas capturadas corresponden a una sesión SIP con Ekiga, un cliente de VoIP para GNOME. Responde a las siguientes cuestiones:
+
  ** ¿Cuántos paquetes componen la captura?
     - Hay un total de 954 paquetes.
+    
  ** ¿Cuánto tiempo dura la captura?
     - La captura dura 56 segundos con algunas milésimas.
+    
  ** ¿Qué IP tiene la máquina donde se ha efectuado la captura? ¿Se trata de una IP pública o de una IP privada? ¿Por qué lo sabes?
     - La captura se ha realizado en la IP 192.168.1.34, la cual es una dirección privada. Las direcciones del grupo 192.168.0.0 pertenecen a la Clase C, usadas en compañías medias y pequeños proveedores de internet.
 
 
 3. Antes de analizar las tramas, mira las estadísticas generales que aparecen en el menú de Statistics. En el apartado de jerarquía de protocolos (Protocol Hierarchy) se puede ver el porcentaje del tráfico correspondiente al protocolo TCP y UDP.
+
  ** ¿Cuál de los dos es mayor? ¿Es esto consistente con una aplicación que transmite en tiempo real?
     - El protocolo UDP tiene un porcentaje de paquetes mucho mayor que TCP. Esto es lo adecuado ya que en aplicaciones de tiempo real TCP no sirve por el tiempo que supone ir verificando la recepción de cada paquete de datos, y los protocolos como RTP o RTCP se encapsulan sobre UDP.
+    
  ** ¿Qué otros protocolos podemos ver en la jerarquía de protocolos?
     - Podemos observar también Ethernet, IPv4, SIP, RTP, RTCP, HTTP, ICMP y ARP.
 
+
 4. Observa por encima el flujo de tramas en el menú de Statistics en IO Graphs. La captura que estamos viendo incluye desde la inicialización (registro) de la aplicación hasta su finalización, con una llamada entremedias.
+
  ** Filtra por sip para conocer cuándo se envían paquetes SIP. ¿En qué segundos tienen lugar esos envíos?
     - En los segundos 7, 14, 16, 38, 39, 46 y 55.
+    
  ** Y los paquetes con RTP, ¿cuándo se envían?
     - Comienzan a enviarse en el segundo 16, una vez que se ha establecido la sesión mediante SIP, y dejan de enviarse cuando se cierra esta sesión, en el segundo 38.
 
 
 [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
+
 5. Analiza las primeras cuatro tramas de la captura nada más arrancar Ekiga.
+
  ** ¿Qué servicio es el utilizado en estas tramas?
     - Utilizan DNS
+    
  ** ¿Cuál es la dirección IP del servidor de nombres del ordenador que ha lanzado Ekiga?
     - 80.58.61.250
+    
  ** ¿Qué dirección IP (de ekiga.net) devuelve el servicio de nombres?
     - 86.64.162.35
+    
  ** ¿Por qué se pide también para 35.162.64.86.in-addr.arpa?
     - ***Es la IP del cliente invertida, no se sabe muy bien por que hace esto*********
 
 
 6. A continuación, hay más de una docena de tramas TCP/HTTP.
+
  ** ¿Podrías decir la URL que se está pidiendo?
     - Pide la URL http://ekiga.net/ip/
+    
  ** ¿Qué user agent (UA) la está pidiendo?
     - El agente que la pide es Ekiga
+    
  ** ¿Qué devuelve el servidor?
     - Devuelve un OK *****
+    
  ** Si lanzamos el navegador web, por ejemplo, Mozilla Firefox, y vamos a la misma URL, ¿qué recibimos? ¿Qué es, entonces, lo que está respondiendo el servidor?
     - Aparece la dirección IP 212.128.254.152 *******
 
 
 7. Hasta la trama 45 se puede observar una secuencia de tramas del protocolo STUN.
+
  ** ¿Por qué crees que se hace uso de este protocolo en esta captura? Busca en la Wikipedia.
     - Se está haciendo uso de un cliente STUN porque SIP utiliza paquetes UDP para señalizar tráfico de archivos multimedia, pero no permite establecer una comunicación cuando los extremos se encuentran detrás de un NAT. El STUN permite encontrar una IP pública para el cliente, y un puerto para permitir el tráfico entrante a la red del cliente.
+    
  ** ¿Estamos tras un NAT?
     - Si, ya que estamos usando una IP privada.
 
 
 8. La trama 46 es la primera trama SIP. En un entorno como el de Internet, lo habitual es desconocer la dirección IP de la otra parte al realizar una llamada. Por eso, todo usuario registra su localización en un servidor Registrar. El Registrar guarda información sobre los usuarios en un servidor de localización que puede ser utilizado para localizar usuarios.
+
  ** ¿Qué dirección IP tiene el servidor Registrar?
     - La dirección del Registrar es 86.64.162.35
+    
  ** ¿A qué puerto (del servidor Registrar) se envían los paquetes SIP?
     - Al puerto 5063.
+    
  ** ¿Qué método SIP utiliza el UA para registrarse?
     - El método REGISTER
+    
  ** Además de REGISTER, ¿qué instrucciones SIP entiende el UA?
     - INVITE, ACK, OPTIONS, BYE, CANCEL, NOTIFY, REFER y MESSAGE
 
@@ -78,22 +102,35 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
 
 [Al terminar el ejercicio es recomendable hacer commit de los ficheros modificados]
 
+
 9. Fijémonos en las tramas siguientes a la número 46:
+
  ** ¿Se registra con éxito en el primer intento?
     - No, el servidor no autoriza el registro.
+    
  ** ¿Cómo sabemos si el registro se ha realizado correctamente o no?
     - Sabemos que se ha realizado correctamente cuando vemos que el servidor nos responde con un "200 OK", como podemos ver en el paquete 54.
+    
  ** ¿Podrías identificar las diferencias entre el primer intento y el segundo de registro? (fíjate en el tamaño de los paquetes y mira a qué se debe el cambio)
     - El primer intento tiene un tamaño de 523 bytes, el segundo de 712. Esto se debe a que en el primer paquete enviado no va el campo Authorization en la cabecera, con la información de autenticación pertinente del user agent para el servicio que se está pidiendo.
+    
  ** ¿Cuánto es el valor del tiempo de expiración de la sesión? Indica las unidades.
     - 3600 segundos.
 
 
 10. Una vez registrados, podemos efectuar una llamada. Vamos a probar con el servicio de eco de Ekiga que nos permite comprobar si nos hemos conectado correctamente. El servicio de eco tiene la dirección sip:500@ekiga.net. Veamos el INVITE de cerca.
+
  ** ¿Puede verse el nombre del que efectúa la llamada, así como su dirección SIP?
+    - Si, Gregorio Robles, dirección SIP "grex@ekiga.net"
+    
  ** ¿Qué es lo que contiene el cuerpo de la trama? ¿En qué formato/protocolo está?
+    - Contiene los métodos que acepta  y está en formato SIP
+    
  ** ¿Tiene éxito el primer intento? ¿Cómo lo sabes?
+    - No tiene éxito. Logrará conectarse al segundo intento como podemos observar en la trama 105 de la captura.
+    
  ** ¿En qué se diferencia el segundo INVITE más abajo del primero? ¿A qué crees que se debe esto?
+    - El segundo INVITE contiene mensajes de autenticación necesarios para realizar la conexión con el servidor.
 
 
 11. Una vez conectado, estudia el intercambio de tramas.
