@@ -51,13 +51,13 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
     - Utilizan DNS
     
  ** ¿Cuál es la dirección IP del servidor de nombres del ordenador que ha lanzado Ekiga?
-    - 80.58.61.250
+    - La dirección del servidor DNS es 80.58.61.250
     
  ** ¿Qué dirección IP (de ekiga.net) devuelve el servicio de nombres?
     - 86.64.162.35
     
  ** ¿Por qué se pide también para 35.162.64.86.in-addr.arpa?
-    - ***Es la IP del cliente invertida, no se sabe muy bien por que hace esto*********
+    - Es la IP del cliente invertida, que se realiza como resolución inversa para comprobar que la dirección IP que se ha recibido es la que se pedía en un principio.
 
 
 6. A continuación, hay más de una docena de tramas TCP/HTTP.
@@ -69,10 +69,10 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
     - El agente que la pide es Ekiga
     
  ** ¿Qué devuelve el servidor?
-    - Devuelve un OK *****
+    - Devuelve un 200 OK, por lo que el recurso que se ha pedido viaja en el cuerpo de esta trama.
     
  ** Si lanzamos el navegador web, por ejemplo, Mozilla Firefox, y vamos a la misma URL, ¿qué recibimos? ¿Qué es, entonces, lo que está respondiendo el servidor?
-    - Aparece la dirección IP 212.128.254.152 *******
+    - Aparece la dirección IP 212.128.254.152. Al encontrarnos tras un NAT observamos que el recurso es diferente a la IP privada del User Agent (192.168.1.34).
 
 
 7. Hasta la trama 45 se puede observar una secuencia de tramas del protocolo STUN.
@@ -81,7 +81,7 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
     - Se está haciendo uso de un cliente STUN porque SIP utiliza paquetes UDP para señalizar tráfico de archivos multimedia, pero no permite establecer una comunicación cuando los extremos se encuentran detrás de un NAT. El STUN permite encontrar una IP pública para el cliente, y un puerto para permitir el tráfico entrante a la red del cliente.
     
  ** ¿Estamos tras un NAT?
-    - Si, ya que estamos usando una IP privada.
+    - Si, ya que estamos usando el protocolo STUN.
 
 
 8. La trama 46 es la primera trama SIP. En un entorno como el de Internet, lo habitual es desconocer la dirección IP de la otra parte al realizar una llamada. Por eso, todo usuario registra su localización en un servidor Registrar. El Registrar guarda información sobre los usuarios en un servidor de localización que puede ser utilizado para localizar usuarios.
@@ -96,7 +96,7 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
     - El método REGISTER
     
  ** Además de REGISTER, ¿qué instrucciones SIP entiende el UA?
-    - INVITE, ACK, OPTIONS, BYE, CANCEL, NOTIFY, REFER y MESSAGE
+    - INVITE, ACK, OPTIONS, BYE, CANCEL, NOTIFY, REFER y MESSAGE, como podemos observar en el campo Allow en las cabeceras de la petición SIP.
 
 
 
@@ -106,7 +106,7 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
 9. Fijémonos en las tramas siguientes a la número 46:
 
  ** ¿Se registra con éxito en el primer intento?
-    - No, el servidor no autoriza el registro.
+    - No, el servidor no autoriza el registro. En el paquete 50 podemos ver que el servidor responde con código 401 Unauthorized.
     
  ** ¿Cómo sabemos si el registro se ha realizado correctamente o no?
     - Sabemos que se ha realizado correctamente cuando vemos que el servidor nos responde con un "200 OK", como podemos ver en el paquete 54.
@@ -124,21 +124,31 @@ Se ha capturado una sesión SIP (archivo sip.cap.gz), que se puede abrir con Wir
     - Si, Gregorio Robles, dirección SIP "grex@ekiga.net"
     
  ** ¿Qué es lo que contiene el cuerpo de la trama? ¿En qué formato/protocolo está?
-    - Contiene los métodos que acepta  y está en formato SIP
+    - El cuerpo de la trama es una descripción de los formatos multimedia a usar y utiliza el protocolo SDP (Session Description)
     
  ** ¿Tiene éxito el primer intento? ¿Cómo lo sabes?
-    - No tiene éxito. Logrará conectarse al segundo intento como podemos observar en la trama 105 de la captura.
+    - No tiene éxito, el servidor contesta con otro error, esta vez el 507. Logrará conectarse al segundo intento como podemos observar en la trama 105 de la captura.
     
  ** ¿En qué se diferencia el segundo INVITE más abajo del primero? ¿A qué crees que se debe esto?
-    - El segundo INVITE contiene mensajes de autenticación necesarios para realizar la conexión con el servidor.
+    - El segundo INVITE contiene mensajes de autenticación necesarios para realizar la conexión con el servidor, más concretamente es la información necesaria para que el proxy establezca la llamada.
 
 
 11. Una vez conectado, estudia el intercambio de tramas.
+
  ** ¿Qué protocolo(s) se utiliza(n)? ¿Para qué sirven estos protocolos?
+    - Una vez establecida la conexión, se ven cuatro paquetes DNS y el resto hasta que se desconecta son todos H.261 y RTP. Al ser una transmisión de elementos multimedia es normal que se use el formato RTP, que transmite las tramas en tiempo real sin necesitar un grado mínimo de fiabilidad aumentando la velocidad de intercambio, mientras que H.261 es más bien un codificador de la información transferida.
+    
  ** ¿Cuál es el tamaño de paquete de los mismos?
+    - Los paquetes de H.261 pesan alrededor de 1000 bytes cada vez, mientras que los RTP son siempre 214.
+    
  ** ¿Se utilizan bits de padding?
+    - Podemos observar en la cabecera que el campo Padding tiene valor "False", por lo que deducimos que no hay relleno.
+    
  ** ¿Cuál es la periodicidad de los paquetes que se envían?
+    - Se envían cada 20 milisegundos aproximadamente.
+    
  ** ¿Cuántos bits/segundo estamos enviando?
+    - 160 bytes de paquete cada 20 milisegundos dan un total de 8000 bytes cada segundo, y al pasarlo a bits obtenemos 64 kb por segundo.
 
 
 
